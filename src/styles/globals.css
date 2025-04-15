@@ -133,11 +133,3 @@ body {
     @apply bg-background text-foreground;
   }
 }
-
-.navbar-logo {
-  padding-left: 60px;
-  margin-top: -15px;
-  margin-bottom: -10px;
-  display: flex;
-  align-items: center;
-}
