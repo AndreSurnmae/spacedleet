@@ -8,7 +8,14 @@ export default function Document() {
       <Head>
         <link rel="icon" href="/SpacedLeetLogo_bh.svg" type="image/svg+xml" />
       </Head>
-      <body className="antialiased">
+      <body className="antialiased" 
+        style={{ 
+          backgroundImage: "url(/Starry_BG.webp)",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+          height: "100%"
+          }}>
         <Navbar/>
         <Main />
         <NextScript />
