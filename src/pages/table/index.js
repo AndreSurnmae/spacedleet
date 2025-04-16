@@ -11,57 +11,10 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Search, X } from "lucide-react";
-
-const initialProblems = [
-  {
-    id: "1",
-    number: 1,
-    title: "Two Sum",
-    difficulty: "Easy",
-    url: "https://leetcode.com/problems/two-sum/",
-    solved: false,
-    tags: ["Array", "Hash Table"],
-  },
-  {
-    id: "2",
-    number: 2,
-    title: "Add Two Numbers",
-    difficulty: "Medium",
-    url: "https://leetcode.com/problems/add-two-numbers/",
-    solved: false,
-    tags: ["Linked List", "Math"],
-  },
-  {
-    id: "3",
-    number: 3,
-    title: "Longest Substring Without Repeating Characters",
-    difficulty: "Medium",
-    url: "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
-    solved: false,
-    tags: ["String", "Sliding Window"],
-  },
-  {
-    id: "4",
-    number: 4,
-    title: "Median of Two Sorted Arrays",
-    difficulty: "Hard",
-    url: "https://leetcode.com/problems/median-of-two-sorted-arrays/",
-    solved: false,
-    tags: ["Array", "Binary Search", "Divide and Conquer"],
-  },
-  {
-    id: "5",
-    number: 5,
-    title: "Longest Palindromic Substring",
-    difficulty: "Medium",
-    url: "https://leetcode.com/problems/longest-palindromic-substring/",
-    solved: false,
-    tags: ["String", "Dynamic Programming"],
-  },
-];
+import APIClient from "@/lib/axios";
 
 export default function ProblemTracker() {
-  const [problems, setProblems] = useState(initialProblems);
+  const [problems, setProblems] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -75,76 +28,31 @@ export default function ProblemTracker() {
   });
   const [newTag, setNewTag] = useState("");
 
-  const toggleSolved = (id) => {
-    setProblems(
-      problems.map((problem) => {
-        if (problem.id === id) {
-          const solved = !problem.solved;
-          return {
-            ...problem,
-            solved,
-            solvedDate: solved ? new Date().toISOString() : undefined,
-          };
-        }
-        return problem;
-      })
-    );
-  };
-
-  const addProblem = () => {
-    if (!newProblem.title || !newProblem.url) return;
-
-    const problem = {
-      id: Date.now().toString(),
-      number: newProblem.number || 0,
-      title: newProblem.title || "",
-      difficulty: newProblem.difficulty,
-      url: newProblem.url || "",
-      solved: false,
-      tags: newProblem.tags || [],
+  useEffect(() => {
+    const fetchProblems = async () => {
+      try {
+        const response = await APIClient.get("problems");
+        setProblems(response.data);
+        console.log("Fetched problems:", response.data);
+      } catch (error) {
+        console.error("Error fetching problems:", error);
+      }
     };
 
-    setProblems([...problems, problem]);
-    setNewProblem({
-      number: 0,
-      title: "",
-      difficulty: "Easy",
-      url: "",
-      tags: [],
-    });
-    setShowAddForm(false);
-  };
+    fetchProblems();
+  }, []);
 
-  const addTag = () => {
-    if (!newTag) return;
-    setNewProblem({
-      ...newProblem,
-      tags: [...(newProblem.tags || []), newTag],
-    });
-    setNewTag("");
-  };
-
-  const removeTag = (tagToRemove) => {
-    setNewProblem({
-      ...newProblem,
-      tags: (newProblem.tags || []).filter((tag) => tag !== tagToRemove),
-    });
-  };
-
-  const filteredProblems = problems.filter((problem) => {
-    const matchesSearch =
-      problem.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      problem.tags.some((tag) =>
-        tag.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-
-    const matchesDifficulty =
-      difficultyFilter === "all" || problem.difficulty === difficultyFilter;
+  const filteredProblems = problems.filter((userProblem) => {
+    const matchesSearch = userProblem.problem.title
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
 
     const matchesStatus =
-      statusFilter === "all" ||
-      (statusFilter === "solved" && problem.solved) ||
-      (statusFilter === "unsolved" && !problem.solved);
+      statusFilter === "all" || userProblem.isDue == (statusFilter === "due");
+
+    const matchesDifficulty =
+      difficultyFilter === "all" ||
+      userProblem.problem.difficulty === difficultyFilter;
 
     return matchesSearch && matchesDifficulty && matchesStatus;
   });
@@ -181,8 +89,8 @@ export default function ProblemTracker() {
             </SelectTrigger>
             <SelectContent className="bg-gray-800 text-white">
               <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="solved">Solved</SelectItem>
-              <SelectItem value="unsolved">Unsolved</SelectItem>
+              <SelectItem value="due">Due</SelectItem>
+              <SelectItem value="notdue">Not Due</SelectItem>
             </SelectContent>
           </Select>
 
@@ -315,10 +223,7 @@ export default function ProblemTracker() {
           </div>
         </div>
       )}
-      <ProblemTable
-        filteredProblems={filteredProblems}
-        toggleSolved={toggleSolved}
-      ></ProblemTable>
+      <ProblemTable filteredProblems={filteredProblems}></ProblemTable>
       <div className="text-sm text-gray-400">
         Showing {filteredProblems.length} of {problems.length} problems
       </div>
