@@ -1,10 +1,15 @@
+import Image from "next/image";
+import Link from "next/link";
+
 export default function Footer() {
     return (
         <footer className="flex flex-row items-center justify-between md:px-5 py-4 bg-white text-black">
             <div className="flex items-center md:ml-[85px] ml-[25px] text-[12px]">
-                <img 
-                    src="/SpacedLeetLogo_bh.svg"
+                <Image 
+                    src={"/SpacedLeetLogo_bh.svg"}
                     alt="Logo"
+                    width={25}
+                    height={25}
                     className="w-[25px]"
                 />
                 <div className="flex items-center gap-2 ml-[10px] text-[12px]">
@@ -20,11 +25,11 @@ export default function Footer() {
             </div>
 
             <div className="flex mr-[25px] md:mr-[85px] gap-6 text-[12px]">
-                <a href="/" className="hover:text-[#4973bf] hover:underline">About</a>
-                <a href="/" className="hover:text-[#4973bf] hover:underline">Accessibility</a>        
-                <a href="/signup" className="hover:text-[#4973bf] hover:underline">Join Us</a>
-                <a href="/" className="hover:text-[#4973bf] hover:underline">Privacy Policy</a>
-                <a href="/" className="hover:text-[#4973bf] hover:underline">User Agreement</a>
+                <Link href="/" className="hover:text-[#4973bf] hover:underline">About</Link >
+                <Link href="/" className="hover:text-[#4973bf] hover:underline">Accessibility</Link >        
+                <Link href="/signup" className="hover:text-[#4973bf] hover:underline">Join Us</Link >
+                <Link href="/" className="hover:text-[#4973bf] hover:underline">Privacy Policy</Link >
+                <Link href="/" className="hover:text-[#4973bf] hover:underline">User Agreement</Link >
             </div>
         </footer>
     );
